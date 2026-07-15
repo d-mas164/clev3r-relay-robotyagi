@@ -1,0 +1,18 @@
+
+' Функция, имитирующая случайный писк R2-D2
+' Параметр: count_in — сколько "звуков" будет в одной фразе
+Function PlayR2D2(in number count_in)
+  For i = 1 To count_in
+    ' Генерируем случайную частоту от 400 Гц (низкий) до 2500 Гц (высокий писк)
+    randomFreq = Math.GetRandomNumber(2100) + 400
+    
+    ' Генерируем случайную длительность звука от 40 до 150 миллисекунд
+    randomDuration = Math.GetRandomNumber(110) + 40
+    
+    ' Воспроизводим звук (громкость 100)
+    Speaker.Tone(100, randomFreq, randomDuration)
+    
+    ' Ждем окончания звука перед следующим писком
+    Program.Delay(randomDuration)
+  EndFor
+EndFunction

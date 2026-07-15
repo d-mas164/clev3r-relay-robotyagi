@@ -1,0 +1,105 @@
+'Реализация работы с тележкой
+'---------------------------------
+import "Mods\AdvMtCtrls"
+
+number left_sensor
+number right_sensor
+number BlackThreshold
+number wheelDiameter
+
+Function Initialize()
+
+  ' Инициализация датчиков и портов (настройте под своего робота)
+  Motor.Invert("C") ' Инвертируем левый мотор, если робот едет назад
+  Sensor.SetMode(2, 0) ' Датчик 1: Левый датчик линии (Отраженный свет)
+  Sensor.SetMode(3, 0) ' Датчик 2: Правый датчик линии (Отраженный свет)
+  Motor.ResetCount("BC")
+  
+  BlackThreshold = 12
+  wheelDiameter = 100
+  ' Подберите kp (пропорциональный) и kd (дифференциальный)
+  AdvMtCtrls.PD_Config(1.3, 10, 75 )
+  '  1.5, 'kp (пропорциональный)
+  '  15, 'kd (дифференциальный)
+  '  75 ' базовая скорость
+  ')
+EndFunction
+
+Function DriveTo()
+  While "true"
+    _ReadSensors()
+    _CalculateMove()
+    Program.Delay(10) ' Небольшая задержка для стабильности цикла
+  EndWhile
+EndFunction
+
+Function _CalculateMove() 
+  ' Рассчитываем управление для моторов B и C на основе ошибки между датчиками
+  AdvMtCtrls.PD(left_sensor, right_sensor, motor_B_speed, motor_C_speed)
+  
+  ' Подаем команду на моторы
+  Motor.StartPower("B", motor_B_speed)
+  Motor.StartPower("C", motor_C_speed)
+EndFunction
+
+Function _ReadSensors()
+  left_sensor = Sensor.ReadPercent(3)
+  right_sensor = Sensor.ReadPercent(2)
+EndFunction
+
+Function _DistanceToDegrees(in number distance_in, out number targetDeg_out)
+  ' Значение числа Пи
+  pi = 3.14159
+  ' Расчет длины окружности колеса
+  wheelCircumference = pi * wheelDiameter
+  ' Перевод расстояния в градусы энкодера
+  targetDeg_out = (distance_in / wheelCircumference) * 360
+EndFunction
+
+Function Stop()
+  Motor.Stop("BC", "True") ' Мгновенное торможение моторов B и C
+EndFunction
+
+Function DriveToCross()
+  While "true"
+    _ReadSensors()
+    If left_sensor < BlackThreshold And right_sensor < BlackThreshold Then
+      break
+    EndIf
+    _CalculateMove()
+    Program.Delay(10) ' Небольшая задержка для стабильности цикла
+   
+  EndWhile
+EndFunction
+
+Function DriveToCrossAndStop()
+  DriveToCross()
+  Stop()
+EndFunction
+
+Function SlowDown(in number minPwr_in, in number totalDist_in)
+  _DistanceToDegrees(totalDist_in, totalDistDegrees)
+  ' Настройка плавного торможения на дистанцию totalDist_in градусов
+  ' Параметры: мин_мощность, макс_мощность, разгон_путь, торможение_путь, всего_путь
+  AdvMtCtrls.AccTwoEnc_Config(minPwr_in, AdvMtCtrls.pwr, 0, totalDistDegrees - 90, totalDistDegrees)
+  Motor.ResetCount("BC")
+  is_done = 0
+  current_pwr = 0
+  
+  While is_done = 0
+    _ReadSensors()
+  
+    ' Получаем текущую базовую мощность (плавный разгон/торможение) по энкодерам B и C
+    AdvMtCtrls.AccTwoEnc(Motor.GetCount("B"), Motor.GetCount("C"), current_pwr, is_done)
+  
+    ' Рассчитываем управление для моторов B и C на основе ошибки между датчиками
+    ' Передаем текущую скорость current_pwr как базовую
+    AdvMtCtrls.PD_pwrIn(current_pwr, left_sensor, right_sensor, motor_B_speed, motor_C_speed)
+    
+    ' Подаем команду на моторы
+    Motor.StartPower("B", motor_B_speed)
+    Motor.StartPower("C", motor_C_speed)
+    
+    Program.Delay(10) ' Небольшая задержка для стабильности цикла
+  EndWhile
+EndFunction

@@ -1,0 +1,19 @@
+import "Truck"
+import "Sound"
+
+Sound.PlayR2D2(4)
+  
+Truck.Initialize()
+
+Truck.DriveToCross()
+Truck.SlowDown(60,110) ' тормозим 60мм до скорости 20
+Truck.DriveToCross()
+Truck.SlowDown(60,150) ' тормозим 60мм до скорости 20
+Truck.DriveToCross()
+Truck.SlowDown(20,400) ' тормозим 400мм до скорости 20
+
+Truck.Stop()
+
+Sound.PlayR2D2(8)
+Program.Delay(1000)
+
