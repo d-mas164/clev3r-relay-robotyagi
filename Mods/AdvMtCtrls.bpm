@@ -129,7 +129,6 @@ Function Sync_pwrIn(in number eB, in number eC, in number S_KP, in number vB, in
   pC = vC + (Math.Abs(vB + 1) - Math.Abs(vB)) * U
 EndFunction
 
-Function AccOneEnc_Config(in number minPwr_in, in number maxPwr_in, in number accelDist_in, in number DecelDist_in, in number totalDist_in)
 Function AccTwoEnc_Config(in number minPwr_in, in number maxPwr_in, in number accelDist_in, in number DecelDist_in, in number totalDist_in)
   ACC2_minPwr = Math.Abs(minPwr_in)
   ACC2_maxPwr = Math.Abs(maxPwr_in)
@@ -151,7 +150,6 @@ Function AccTwoEnc(in number e1, in number e2, out number pwrOut, out number don
     done = 1
   ElseIf currEnc > ACC2_totalDist / 2 Then
     If ACC2_DecelDist = 0 Then
-      pwr = ACC2_maxPwr
       pwr_enc = ACC2_maxPwr
     Else
       pwr_enc = (ACC2_maxPwr - ACC2_minPwr) / Math.Power(ACC2_DecelDist, 2) * Math.Power(currEnc - ACC2_totalDist, 2) + ACC2_minPwr
