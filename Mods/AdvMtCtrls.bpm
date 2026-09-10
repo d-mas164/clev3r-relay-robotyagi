@@ -130,19 +130,6 @@ Function Sync_pwrIn(in number eB, in number eC, in number S_KP, in number vB, in
 EndFunction
 
 Function AccOneEnc_Config(in number minPwr_in, in number maxPwr_in, in number accelDist_in, in number DecelDist_in, in number totalDist_in)
-  ACC1_minPwr = Math.Abs(minPwr_in)
-  ACC1_maxPwr = Math.Abs(maxPwr_in)
-  ACC1_accelDist = accelDist_in
-  ACC1_DecelDist = DecelDist_in
-  ACC1_totalDist = totalDist_in
-  
-  If minPwr_in < 0 Then
-    ACC1_isNEG = 1
-  Else
-    ACC1_isNEG = 0
-  EndIf
-EndFunction
-
 Function AccTwoEnc_Config(in number minPwr_in, in number maxPwr_in, in number accelDist_in, in number DecelDist_in, in number totalDist_in)
   ACC2_minPwr = Math.Abs(minPwr_in)
   ACC2_maxPwr = Math.Abs(maxPwr_in)
@@ -157,40 +144,6 @@ Function AccTwoEnc_Config(in number minPwr_in, in number maxPwr_in, in number ac
   EndIf
 EndFunction
 
-Function AccOneEnc(in number e1, out number pwrOut, out number done)
-  currEnc = Math.Abs(e1)
-  
-  If currEnc >= ACC1_totalDist Then
-    done = 1
-  ElseIf currEnc > ACC1_totalDist / 2 Then
-    If ACC1_DecelDist = 0 Then
-      pwr = ACC1_maxPwr
-    Else
-      pwr = (ACC1_maxPwr - ACC1_minPwr) / Math.Power(ACC1_DecelDist, 2) * Math.Power(currEnc - ACC1_totalDist, 2) + ACC1_minPwr
-    EndIf
-    done = 0
-  Else
-    If ACC1_accelDist = 0 Then
-      pwr = ACC1_maxPwr
-    Else
-      pwr = (ACC1_maxPwr - ACC1_minPwr) / Math.Power(ACC1_accelDist, 2) * Math.Power(currEnc - 0, 2) + ACC1_minPwr
-    EndIf
-    done = 0
-  EndIf
-
-  If pwr < ACC1_minPwr Then
-    pwr = ACC1_minPwr
-  ElseIf pwr > ACC1_maxPwr Then
-    pwr = ACC1_maxPwr
-  EndIf
-  
-  If ACC1_isNEG = 1 Then
-    pwrOut = 0 - pwr
-  Else
-    pwrOut = pwr
-  EndIf
-EndFunction
-
 Function AccTwoEnc(in number e1, in number e2, out number pwrOut, out number done)
   currEnc = (Math.Abs(e1) + Math.Abs(e2)) / 2
   
@@ -199,28 +152,29 @@ Function AccTwoEnc(in number e1, in number e2, out number pwrOut, out number don
   ElseIf currEnc > ACC2_totalDist / 2 Then
     If ACC2_DecelDist = 0 Then
       pwr = ACC2_maxPwr
+      pwr_enc = ACC2_maxPwr
     Else
-      pwr = (ACC2_maxPwr - ACC2_minPwr) / Math.Power(ACC2_DecelDist, 2) * Math.Power(currEnc - ACC2_totalDist, 2) + ACC2_minPwr
+      pwr_enc = (ACC2_maxPwr - ACC2_minPwr) / Math.Power(ACC2_DecelDist, 2) * Math.Power(currEnc - ACC2_totalDist, 2) + ACC2_minPwr
     EndIf
     done = 0
   Else
     If ACC2_accelDist = 0 Then
-      pwr = ACC2_maxPwr
+      pwr_enc = ACC2_maxPwr
     Else
-      pwr = (ACC2_maxPwr - ACC2_minPwr) / Math.Power(ACC2_accelDist, 2) * Math.Power(currEnc - 0, 2) + ACC2_minPwr
+      pwr_enc = (ACC2_maxPwr - ACC2_minPwr) / Math.Power(ACC2_accelDist, 2) * Math.Power(currEnc - 0, 2) + ACC2_minPwr
     EndIf
     done = 0
   EndIf
   
-  If pwr < ACC2_minPwr Then
-    pwr = ACC2_minPwr
-  ElseIf pwr > ACC2_maxPwr Then
-    pwr = ACC2_maxPwr
+  If pwr_enc < ACC2_minPwr Then
+    pwr_enc = ACC2_minPwr
+  ElseIf pwr_enc > ACC2_maxPwr Then
+    pwr_enc = ACC2_maxPwr
   EndIf
   
   If ACC2_isNEG = 1 Then
-    pwrOut = 0 - pwr
+    pwrOut = 0 - pwr_enc
   Else
-    pwrOut = pwr
+    pwrOut = pwr_enc
   EndIf
 EndFunction

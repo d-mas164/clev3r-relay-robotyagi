@@ -1,0 +1,18 @@
+Function Open()
+  Motor.Move("D", -20,270 , "True")
+'Motor.SchedulePower("D",-40 ,0,250,55,"True")
+EndFunction
+
+
+Function Close()
+  Motor.Move("D", 20,270 , "True") '300
+'Motor.SchedulePower("D",40 ,0,250,55,"True")
+EndFunction
+
+Function Flip()
+Motor.Move("A", 100, 415, "True") 
+EndFunction
+
+Function Flip2()
+  Motor.Move("A", -100, 415, "True") 
+EndFunction

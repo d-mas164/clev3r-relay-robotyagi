@@ -1,0 +1,33 @@
+import "Sound"
+
+number mailbox_id
+Function Initialize()
+  mailbox_id = Mailbox.Create("relay")
+EndFunction
+
+Function PassRelay()
+  Mailbox.Send("", "relay","pass")
+EndFunction
+
+Function WaitForPassRelay()
+  _WaitForMessage("pass")
+EndFunction
+
+Function TakeRelay()
+  Mailbox.Send("", "relay","take")
+EndFunction
+
+Function WaitForTakeRelay()
+  _WaitForMessage("take")
+EndFunction
+
+Function _WaitForMessage(in string message)
+  Sound.PlayR2D2(2);
+  msg = ""
+  While msg <> message And Buttons.Current = ""
+    If Mailbox.IsAvailable(mailbox_id) = "True" Then
+      msg = Mailbox.Receive(mailbox_id)
+    EndIf
+    Program.Delay(10)
+  EndWhile
+EndFunction

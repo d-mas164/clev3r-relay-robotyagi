@@ -1,19 +1,55 @@
-import "Truck"
-import "Sound"
+folder "prjs" "robotyagi"
 
-Sound.PlayR2D2(4)
-  
+import "Truck"
+import "Gripper"
+import "Sound"
+import "Comms"
+
+Comms.Initialize()
 Truck.Initialize()
 
-Truck.DriveToCross()
-Truck.SlowDown(60,110) ' тормозим 60мм до скорости 20
-Truck.DriveToCross()
-Truck.SlowDown(60,150) ' тормозим 60мм до скорости 20
-Truck.DriveToCross()
-Truck.SlowDown(20,400) ' тормозим 400мм до скорости 20
+Lead= "Ivan"
+pas = "Dima"
+If EV3.BrickName <> pas Then
+Goto relayPass
+EndIf
 
-Truck.Stop()
+While "True"
+ Comms.WaitForPassRelay()
+  Gripper.Close()
+  Thread.Run=FLIP
+  Comms.TakeRelay()
+  
+  'Truck.SlowDown(100,6000) 'поменять
+  
+  Truck.DriveToCross()
+  
+  'Горка
+  'Truck.SlowDown(60,110) ' тормозим 60мм до скорости 
+  
+  ' Бордюры
+  'Truck.SlowDown(60,150) ' тормозим 60мм до скорости 20
+  'Truck.DriveToCross()
+  
+  ' Зона передачи
+  Truck.SlowDownWithStallDetection(20,300) ' тормозим 300мм до скорости 20
+  Truck.Stop()
+  Gripper.Open()
+  Truck.Otezd()
+  relayPass:
+  Comms.PassRelay()
+  Truck.Stop()
+  Comms.WaitForTakeRelay()
+  Truck.DriveToCrossAndStop()
+  Gripper.Close()
+  Gripper.Flip2()
+  Gripper.Open()
+EndWhile
 
-Sound.PlayR2D2(8)
-Program.Delay(1000)
 
+
+
+
+Sub FLIP
+  Gripper.Flip()
+EndSub
