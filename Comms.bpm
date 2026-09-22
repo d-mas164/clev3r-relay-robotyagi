@@ -1,8 +1,22 @@
 import "Sound"
 
 number mailbox_id
+string leadBrickName
+number IsLeadBrick
+
 Function Initialize()
+  leadBrickName = "Dima"
   mailbox_id = Mailbox.Create("relay")
+  If EV3.BrickName = leadBrickName Then
+    IsLeadBrick = 1
+  Else
+    IsLeadBrick = 0
+    'Mailbox.Connect(leadBrickName)
+   EndIf
+EndFunction
+
+Function IsLeadBlock()
+  Mailbox.Send("", "relay","pass")
 EndFunction
 
 Function PassRelay()
@@ -30,4 +44,5 @@ Function _WaitForMessage(in string message)
     EndIf
     Program.Delay(10)
   EndWhile
+  Sound.PlayR2D2(2);
 EndFunction

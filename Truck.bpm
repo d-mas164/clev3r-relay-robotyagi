@@ -1,7 +1,8 @@
 'Реализация работы с тележкой
 '---------------------------------
 import "Sound"
-import "Mods\AdvMtCtrls"
+import "Light"
+import "AdvMtCtrls"
 
 number left_sensor
 number right_sensor
@@ -10,10 +11,9 @@ number wheelDiameter
 
 Function Initialize()
   MotorBC.Off()
-  ' Инициализация датчиков и портов (настройте под своего робота)
+
+  ' Инициализация датчиков и портов
   Motor.Invert("C") ' Инвертируем левый мотор, если робот едет назад
-  Sensor.SetMode(2, 0) ' Датчик 1: Левый датчик линии (Отраженный свет)
-  Sensor.SetMode(3, 0) ' Датчик 2: Правый датчик линии (Отраженный свет)
   Motor.ResetCount("BC")
   MotorB.IsMedium()
   MotorC.IsMedium()
@@ -21,11 +21,19 @@ Function Initialize()
   BlackThreshold = 12
   wheelDiameter = 100
   ' Подберите kp (пропорциональный) и kd (дифференциальный)
-  AdvMtCtrls.PD_Config(1.55, 5.7, 100)
-  '  1.5, 'kp (пропорциональный)    0.91
-  '  15, 'kd (дифференциальный)     15
-  '  75 ' базовая скорость          80
-  ')
+  AdvMtCtrls.PD_Config(0.7, 0.6, 100)
+  'AdvMtCtrls.PD_Config(0.85, 2.3, 90)
+
+  ' применение калибровки датчиков
+  filename = "robotyagi/calib.txt" ' Чтение жестко из вашей папки
+  handle = EV3File.OpenRead(filename)
+  max_2 = EV3File.ConvertToNumber(EV3File.ReadLine(handle))
+  min_2 = EV3File.ConvertToNumber(EV3File.ReadLine(handle))
+  max_3 = EV3File.ConvertToNumber(EV3File.ReadLine(handle))
+  min_3 = EV3File.ConvertToNumber(EV3File.ReadLine(handle))
+  EV3File.Close(handle)
+  Light.Config(2, min_2, max_2)
+  Light.Config(3, min_3, max_3)
 EndFunction
 
 Function DriveTo()
@@ -46,8 +54,10 @@ Function _CalculateMove()
 EndFunction
 
 Function _ReadSensors()
-  left_sensor = Sensor.ReadPercent(3)
-  right_sensor = Sensor.ReadPercent(2)
+  Light.getS3(left_sensor_t)
+  Light.getS2(right_sensor_t)
+  left_sensor=left_sensor_t
+  right_sensor=right_sensor_t
 EndFunction
 
 Function _DistanceToDegrees(in number distance_in, out number targetDeg_out)
@@ -71,19 +81,15 @@ Function DriveToCross()
     Program.Delay(10) ' Небольшая задержка для стабильности цикла
     
   EndWhile
-  SlowDown(50,30)
 EndFunction
 
-Function DriveToCrossAndStop()
-  DriveToCross()
-  Stop()
-EndFunction
-
-Function SlowDown(in number minPwr_in, in number totalDist_in)
+Function DriveDistance(in number totalDist_in, in number minPwr_in, in number acc_dist_in, in number dec_dist_in)
   _DistanceToDegrees(totalDist_in, totalDistDegrees)
+  _DistanceToDegrees(acc_dist_in, accDistDegrees)
+  _DistanceToDegrees(dec_dist_in, decDistDegrees)
   ' Настройка плавного торможения на дистанцию totalDist_in градусов
   ' Параметры: мин_мощность, макс_мощность, разгон_путь, торможение_путь, всего_путь
-  AdvMtCtrls.AccTwoEnc_Config(minPwr_in, AdvMtCtrls.pwr, 0, totalDistDegrees / 2, totalDistDegrees)
+  AdvMtCtrls.AccTwoEnc_Config(minPwr_in, AdvMtCtrls.pwr, accDistDegrees, decDistDegrees, totalDistDegrees)
   Motor.ResetCount("BC")
   is_done = 0
   current_pwr = 0
@@ -156,5 +162,5 @@ EndFunction
 
 Function Otezd()
   MotorBC.StartPower(-40)
-  Program.Delay(500)
+  Program.Delay(700)
 EndFunction

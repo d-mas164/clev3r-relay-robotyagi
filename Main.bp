@@ -8,47 +8,40 @@ import "Comms"
 Comms.Initialize()
 Truck.Initialize()
 
-Lead= "Ivan"
-pas = "Dima"
-If EV3.BrickName <> pas Then
-Goto relayPass
+If Comms.IsLeadBrick = 0 Then
+  Goto relayPass
 EndIf
 
 While "True"
- Comms.WaitForPassRelay()
+  Comms.WaitForPassRelay()
+  Motor.Move("BC", -10,30 , "True") '300
   Gripper.Close()
   Thread.Run=FLIP
   Comms.TakeRelay()
   
-  'Truck.SlowDown(100,6000) 'поменять
-  
+  Truck.DriveDistance(6000, 20, 200, 0)
   Truck.DriveToCross()
   
-  'Горка
-  'Truck.SlowDown(60,110) ' тормозим 60мм до скорости 
-  
-  ' Бордюры
-  'Truck.SlowDown(60,150) ' тормозим 60мм до скорости 20
-  'Truck.DriveToCross()
-  
   ' Зона передачи
-  Truck.SlowDownWithStallDetection(20,300) ' тормозим 300мм до скорости 20
+  Truck.SlowDownWithStallDetection(20,100) ' тормозим 300мм до скорости 20
+  
   Truck.Stop()
   Gripper.Open()
+  Truck.SlowDownWithStallDetection(20,165) ' тормозим 300мм до скорости 20
+  Truck.Stop()
   Truck.Otezd()
+  Truck.Stop()
   relayPass:
   Comms.PassRelay()
-  Truck.Stop()
+
   Comms.WaitForTakeRelay()
-  Truck.DriveToCrossAndStop()
+  Program.Delay(2000)
+  Truck.DriveToCross()
+  Truck.Stop()
   Gripper.Close()
   Gripper.Flip2()
   Gripper.Open()
 EndWhile
-
-
-
-
 
 Sub FLIP
   Gripper.Flip()
