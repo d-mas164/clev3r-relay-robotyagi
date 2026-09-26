@@ -5,7 +5,7 @@ EndFunction
 
 
 Function Close()
-  Motor.Move("D", 20,270 , "True") '300
+  Motor.Move("D", 20,300 , "True") '300
   Time.Reset1()
   
   ' 2. КОНТРОЛЬ ЗАВИСАНИЯ: ждем, пока мотор занят (IsBusy) И пока не вышло время (2000 мс)
@@ -14,8 +14,8 @@ Function Close()
   EndWhile
   
   ' Если шлейф застрял и вышли по таймауту — принудительно выключаем мотор
-  If (Motor.IsBusy("A") = "True") Then
-    Motor.Stop("A", "True")
+  If (Motor.IsBusy("D") = "True") Then
+    Motor.Stop("D", "True")
     Speaker.Tone(50, 9000, 50)
   EndIf
 'Motor.SchedulePower("D",40 ,0,250,55,"True")

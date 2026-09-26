@@ -3,16 +3,18 @@ folder "prjs" "robotyagi"
 Sensor.SetMode(2, 3)
 Sensor.SetMode(3, 3)
 
+leftAvg = 0
+rightAvg = 0
+
 LCD.Clear()
-LCD.Text(1, 20, 20, 2, "CALIBRATION")
-LCD.Text(1, 10, 50, 1, "1. Put on BLACK")
+LCD.Text(1, 20, 10, 2, "CALIBRATION")
+LCD.Text(1, 10, 35, 1, "1. Put on BLACK")
 LCD.Text(1, 10, 70, 1, "and press ENTER (E)")
 
-Buttons.Flush()
-Buttons.Wait()
+CalculateAvgValues()
 
-black_left = Sensor2.Raw1()
-black_right = Sensor3.Raw1()
+black_left = leftAvg
+black_right = rightAvg
 
 LCD.Clear()
 LCD.Text(1, 20, 20, 2, "CALIBRATION")
@@ -24,22 +26,53 @@ LCD.Text(1, 20, 20, 2, "CALIBRATION")
 LCD.Text(1, 10, 50, 1, "2. Put on WHITE")
 LCD.Text(1, 10, 70, 1, "and press ENTER (E)")
 
-Buttons.Flush()
-Buttons.Wait()
+CalculateAvgValues()
 
-white_left = Sensor2.Raw1()
-white_right = Sensor3.Raw1()
+white_left = leftAvg
+white_right = rightAvg
+
+left_ignore = Math.Round( (black_left - white_left ) * 0.1 )
+right_ignore = Math.Round( (black_right - white_right ) * 0.1 )
 
 filename = "robotyagi/calib.txt"
 
 handle = EV3File.OpenWrite(filename)
-EV3File.WriteLine(handle, black_left)  ' 1-я строка: мин левого
-EV3File.WriteLine(handle, white_left)  ' 2-я строка: макс левого
-EV3File.WriteLine(handle, black_right) ' 3-я строка: мин правого
-EV3File.WriteLine(handle, white_right) ' 4-я строка: макс правого
+EV3File.WriteLine(handle, black_left - left_ignore)  ' 1-я строка: мин левого
+EV3File.WriteLine(handle, white_left + left_ignore)  ' 2-я строка: макс левого
+EV3File.WriteLine(handle, black_right - right_ignore) ' 3-я строка: мин правого
+EV3File.WriteLine(handle, white_right + right_ignore) ' 4-я строка: макс правого
 EV3File.Close(handle)
 
 LCD.Clear()
 LCD.Text(1, 10, 40, 2, "SUCCESS!")
 LCD.Text(1, 10, 70, 1, "Saved to calib.txt")
 Program.Delay(2000)
+
+
+Sub CalculateAvgValues
+  count = 0
+  leftSum = 0
+  rightSum = 0
+  
+  Buttons.Flush()
+  Buttons.Wait()
+  Program.Delay(500)
+  Buttons.Flush()
+  While Buttons.Current <> "E"
+    left = Sensor2.Raw1()
+    right = Sensor3.Raw1()
+    count = count + 1
+    leftSum = leftSum + left
+    rightSum = rightSum + right
+    
+    LCD.Clear()
+    LCD.Text(1, 20, 10, 2, "CALIBRATION")
+    
+    ' Вывод текущих значений датчиков в реальном времени
+    LCD.Text(1, 10, 60, 1, "L: " + left + " Avg:" + Math.Round(leftSum / count))
+    LCD.Text(1, 10, 80, 1, "R: " + right + " Avg:" + Math.Round(rightSum / count))
+    Program.Delay(50)
+  EndWhile
+  leftAvg = Math.Round(leftSum / count)
+  rightAvg = Math.Round(rightSum / count)
+EndSub
