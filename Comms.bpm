@@ -11,7 +11,7 @@ Function Initialize()
     IsLeadBrick = 1
   Else
     IsLeadBrick = 0
-    'Mailbox.Connect(leadBrickName)
+    Mailbox.Connect(leadBrickName)
    EndIf
 EndFunction
 
@@ -44,5 +44,4 @@ Function _WaitForMessage(in string message)
     EndIf
     Program.Delay(10)
   EndWhile
-  Sound.PlayR2D2(2);
 EndFunction

@@ -1,28 +1,22 @@
 Function Open()
-  Motor.Move("D", -20,270 , "True")
-'Motor.SchedulePower("D",-40 ,0,250,55,"True")
+  Motor.Move("D", -30, 300 , "True")
 EndFunction
 
-
 Function Close()
-  Motor.Move("D", 20,300 , "True") '300
+  Motor.SchedulePower("D", 80, 0, 300, 0, "True")
   Time.Reset1()
   
-  ' 2. КОНТРОЛЬ ЗАВИСАНИЯ: ждем, пока мотор занят (IsBusy) И пока не вышло время (2000 мс)
-  While (Motor.IsBusy("D") = "True") And (Time.Get1() < 2000)
+  While (Motor.IsBusy("D") = "True") And (Time.Get1() < 1000)
     Program.Delay(10)
   EndWhile
   
-  ' Если шлейф застрял и вышли по таймауту — принудительно выключаем мотор
   If (Motor.IsBusy("D") = "True") Then
     Motor.Stop("D", "True")
-    Speaker.Tone(50, 9000, 50)
+    Speaker.Tone(100, 5000, 500)
   EndIf
-'Motor.SchedulePower("D",40 ,0,250,55,"True")
 EndFunction
 
 Function Flip()
-  'Motor.Move("A", 50, 425, "True")
   _Flip(70)
 EndFunction
 
@@ -33,20 +27,15 @@ EndFunction
 
 
 Function _Flip(in number power)
-  ' 1. ПЛАВНЫЙ СТАРТ И СТОП: 20° разгон, 285° удержание скорости, 150° замедление (всего 455° это чуть больше чем 180 градусов руки но она остановится на упоре)
-  ' Команда не ждет завершения движения, а сразу идет дальше
   Motor.SchedulePower("A", power, 20, 285, 150, "True")
   ' Сбрасываем таймер
   Time.Reset1()
   
-  ' 2. КОНТРОЛЬ ЗАВИСАНИЯ: ждем, пока мотор занят (IsBusy) И пока не вышло время (2000 мс)
   While (Motor.IsBusy("A") = "True") And (Time.Get1() < 2000)
     Program.Delay(10)
   EndWhile
   
-  ' Если шлейф застрял и вышли по таймауту — принудительно выключаем мотор
   If (Motor.IsBusy("A") = "True") Then
     Motor.Stop("A", "True")
-    Speaker.Tone(50, 9000, 50)
   EndIf
 EndFunction
