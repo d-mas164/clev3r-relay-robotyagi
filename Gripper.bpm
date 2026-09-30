@@ -9,20 +9,16 @@ Function Close()
   While (Motor.IsBusy("D") = "True") And (Time.Get1() < 1000)
     Program.Delay(10)
   EndWhile
-  
-  If (Motor.IsBusy("D") = "True") Then
-    Motor.Stop("D", "True")
-    Speaker.Tone(100, 5000, 500)
-  EndIf
+  Motor.Stop("D", "True")
 EndFunction
 
 Function Flip()
-  _Flip(70)
+  _Flip(80)
 EndFunction
 
 
 Function Flip2()
-  _Flip(-70) 
+  _Flip(-80) 
 EndFunction
 
 

@@ -15,10 +15,6 @@ Function Initialize()
    EndIf
 EndFunction
 
-Function IsLeadBlock()
-  Mailbox.Send("", "relay","pass")
-EndFunction
-
 Function PassRelay()
   Mailbox.Send("", "relay","pass")
 EndFunction

@@ -8,19 +8,6 @@ number kp
 number kd
 number pwr
 
-number sync_kp
-number sync_vB
-number sync_vC
-number sync_vBsign
-number sync_vCsign
-
-number ACC1_minPwr
-number ACC1_maxPwr
-number ACC1_accelDist
-number ACC1_DecelDist
-number ACC1_totalDist
-number ACC1_isNEG
-
 number ACC2_minPwr
 number ACC2_maxPwr
 number ACC2_accelDist
@@ -38,35 +25,7 @@ EndFunction
 Function PD(in number e1, in number e2, out number pB, out number pC)
   err = e1 - e2
   U = err * kp + (err - err_old) * kd
-  '---------Start of Power regulation---------
-  'If pB > 100 Then
-  'pC =  pC - (pB -100)
-  'EndIf
   
-  'If pC > 100 Then
-  'pB =  pB - (pC -100)
-  'EndIf
-  
-  'If pB < -100 Then
-  'pC = pC - (pB + 100)
-  'EndIf
-  
-  'If pC < -100 Then
-  'pB = pB - (pC + 100)
-  'EndIf
-  
-  'If pB < -100 Then
-  'pB = -100
-  'ElseIf pB > 100 Then
-  'pB = 100
-  'EndIf
-  
-  'If pC < -100 Then
-  'pC = -100
-  'ElseIf pb > 100 Then
-  'pC = 100
-  'EndIf
-  '---------End of Power regulation-----------
   pB = pwr + U
   pC = pwr - U
   err_old = err
@@ -75,58 +34,10 @@ EndFunction
 Function PD_pwrIn(in number pwrIn, in number e1, in number e2, out number pB, out number pC)
   err = e1 - e2
   U = err * kp + (err - err_old) * kd
-  '---------Start of Power regulation---------
-  'If pB > 100 Then
-  'pC =  pC - (pB -100)
-  'EndIf
   
-  'If pC > 100 Then
-  'pB =  pB - (pC -100)
-  'EndIf
-  
-  'If pB < -100 Then
-  'pC = pC - (pB + 100)
-  'EndIf
-  
-  'If pC < -100 Then
-  'pB = pB - (pC + 100)
-  'EndIf
-  
-  'If pB < -100 Then
-  'pB = -100
-  'ElseIf pB > 100 Then
-  'pB = 100
-  'EndIf
-  
-  'If pC < -100 Then
-  'pC = -100
-  'ElseIf pb > 100 Then
-  'pC = 100
-  'EndIf
-  '---------End of Power regulation-----------
   pB = pwrIn + U
   pC = pwrIn - U
   err_old = err
-EndFunction
-
-Function Sync_Config(in number kp_in, in number vB_in, in number vC_in)
-  sync_kp = kp_in
-  sync_vB = vB_in
-  sync_vC = vC_in
-  sync_vBsign = Math.Abs(vB_in + 1) - Math.Abs(vB_in)
-  sync_vCsign = Math.Abs(vC_in + 1) - Math.Abs(vC_in)
-EndFunction
-
-Function Sync(in number eB, in number eC, out number pB, out number pC)
-  U = ((sync_vC * eB) - (sync_vB * eC)) * sync_kp
-  pB = sync_vB - sync_vCsign * U
-  pC = sync_vC + sync_vBsign * U
-EndFunction
-
-Function Sync_pwrIn(in number eB, in number eC, in number S_KP, in number vB, in number vC,  out number pB, out number pC)
-  U = ((vC * eB) - (vB * eC)) * S_KP
-  pB = vB - (Math.Abs(vC + 1) - Math.Abs(vC)) * U
-  pC = vC + (Math.Abs(vB + 1) - Math.Abs(vB)) * U
 EndFunction
 
 Function AccTwoEnc_Config(in number minPwr_in, in number maxPwr_in, in number accelDist_in, in number DecelDist_in, in number totalDist_in)

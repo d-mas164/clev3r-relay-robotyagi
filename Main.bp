@@ -29,13 +29,13 @@ While "True"
   firstPass:
   Comms.TakeRelay()
   
-  Truck.DriveDistance(1800, 30, 500, 0) ' Проехать 1800 мм - разгон 500 мм со скорости 40
+  Truck.DriveDistance(1800, 30, 500, 0) ' Проехать 1800 мм - разгон 500 мм со скорости 30
   EV3.SetLEDColor("RED", "NORMAL")
   
   ' Поворот после горки
   Truck.DriveDistance(200, 50, 0, 200) ' Проехать 200 мм - тормозим 200 мм до скорости 50
   EV3.SetLEDColor("ORANGE", "NORMAL")
-  Truck.DriveDistance(2500, 50, 100, 0) ' Проехать 2800 мм - разгон 100 мм со скорости 50
+  Truck.DriveDistance(2500, 50, 100, 0) ' Проехать 2500 мм - разгон 100 мм со скорости 50
   EV3.SetLEDColor("GREEN", "NORMAL")
   
   Truck.DriveToCross()
@@ -44,7 +44,7 @@ While "True"
   Thread.Run=DriveToRobot
   Gripper.Open()
   Comms.PassRelay()
-  Truck.Otezd()
+  Truck.StepBack()
   Truck.Stop()
   
   relayPass:
@@ -62,9 +62,6 @@ Sub FLIP
   Gripper.Flip()
 EndSub
 
-Sub OpenGripper
-  Gripper.Open()
-EndSub
 Sub DriveToRobot
   Truck.DriveDistance(250, 20, 0, 250)  ' тормозим 250мм до скорости 20
   Truck.Stop()
