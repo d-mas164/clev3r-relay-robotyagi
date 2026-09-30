@@ -20,7 +20,7 @@ Function Initialize()
   BlackThreshold = 12
   wheelDiameter = 100
   ' Подберите kp (пропорциональный) и kd (дифференциальный)
-  AdvMtCtrls.PD_Config(0.87, 2.8, 80)
+  AdvMtCtrls.PD_Config(0.8, 2.8, 80)
 
   ' применение калибровки датчиков
   filename = "robotyagi/calib.txt"
@@ -45,11 +45,11 @@ EndFunction
 Function _CalculateMove()
   ' Рассчитываем управление для моторов B и C на основе ошибки между датчиками
   AdvMtCtrls.PD(left_sensor, right_sensor, motor_B_speed, motor_C_speed)
-  If motor_B_speed < -20 Then
-    motor_B_speed=-20
+  If motor_B_speed < -5 Then
+    motor_B_speed= -5
   EndIf
-  If motor_C_speed < -20 Then
-    motor_C_speed=-20
+  If motor_C_speed < -5 Then
+    motor_C_speed= -5
   EndIf
 
   ' Подаем команду на моторы
@@ -116,11 +116,11 @@ Function DriveDistance(in number totalDist_in, in number minPwr_in, in number ac
     ' Передаем текущую скорость current_pwr как базовую
     AdvMtCtrls.PD_pwrIn(current_pwr, left_sensor, right_sensor, motor_B_speed, motor_C_speed)
     
-    If motor_B_speed < -20 Then
-      motor_B_speed = -20
+    If motor_B_speed < -5 Then
+      motor_B_speed = -5
     EndIf
-    If motor_C_speed < -20 Then
-      motor_C_speed = -20
+    If motor_C_speed < -5 Then
+      motor_C_speed = -5
     EndIf
 
     ' Подаем команду на моторы
@@ -130,7 +130,7 @@ Function DriveDistance(in number totalDist_in, in number minPwr_in, in number ac
   EndWhile
 EndFunction
 
-Function Otezd()
+Function StepBack()
   MotorBC.StartPower(-40)
   Program.Delay(700)
 EndFunction

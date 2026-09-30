@@ -24,12 +24,12 @@ While "True"
   
   Thread.Run=FLIP
   ' подождать пока захват схватит палочку
-  Program.Delay(500)
+  Program.Delay(800)
   
   firstPass:
   Comms.TakeRelay()
   
-  Truck.DriveDistance(1800, 30, 500, 0) ' Проехать 1800 мм - разгон 500 мм со скорости 30
+  Truck.DriveDistance(1800, 40, 500, 0) ' Проехать 1800 мм - разгон 500 мм со скорости 30
   EV3.SetLEDColor("RED", "NORMAL")
   
   ' Поворот после горки
