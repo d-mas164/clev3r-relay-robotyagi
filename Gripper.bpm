@@ -1,5 +1,5 @@
 Function Open()
-  Motor.Move("D", -30, 300 , "True")
+  Motor.Move("D", -40, 300 , "True")
 EndFunction
 
 Function Close()
@@ -35,7 +35,5 @@ Function _Flip(in number power)
     Program.Delay(10)
   EndWhile
   
-  If (Motor.IsBusy("A") = "True") Then
-    Motor.Stop("A", "True")
-  EndIf
+  Motor.Stop("A", "True")
 EndFunction

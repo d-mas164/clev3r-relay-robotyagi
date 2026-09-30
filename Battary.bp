@@ -1,0 +1,9 @@
+folder "prjs" "robotyagi"
+
+LCD.Clear()
+
+voltage = Math.Round(EV3.BatteryVoltage * 100) / 100
+LCD.Text(1, 20, 10, 2, "BATTERY")
+LCD.Text(1, 30, 50, 2, voltage + " V")
+
+Program.Delay(5000)

@@ -9,42 +9,48 @@ Comms.Initialize()
 Truck.Initialize()
 
 If Comms.IsLeadBrick = 0 Then
+  Comms.PassRelay()
   Goto relayPass
+Else
+  Comms.WaitForPassRelay()
+  Gripper.Close()
+  Goto firstPass
 EndIf
 
 While "True"
   Comms.WaitForPassRelay()
+  Program.Delay(300)
   Motor.Move("BC", -10,30 , "True") '300
   
   Thread.Run=FLIP
   ' подождать пока захват схватит палочку
   Program.Delay(500)
+  
+  firstPass:
   Comms.TakeRelay()
   
-  Truck.DriveDistance(1800, 40, 500, 0) ' Проехать 1800 мм - разгон 500 мм со скорости 40
+  Truck.DriveDistance(1800, 30, 500, 0) ' Проехать 1800 мм - разгон 500 мм со скорости 40
   EV3.SetLEDColor("RED", "NORMAL")
   
   ' Поворот после горки
   Truck.DriveDistance(200, 50, 0, 200) ' Проехать 200 мм - тормозим 200 мм до скорости 50
   EV3.SetLEDColor("ORANGE", "NORMAL")
-  Truck.DriveDistance(2800, 50, 100, 0) ' Проехать 2800 мм - разгон 100 мм со скорости 50
+  Truck.DriveDistance(2500, 50, 100, 0) ' Проехать 2800 мм - разгон 100 мм со скорости 50
   EV3.SetLEDColor("GREEN", "NORMAL")
   
   Truck.DriveToCross()
   
   ' Зона передачи
-  Thread.Run=OpenGripper
-  Truck.DriveDistance(300, 20, 0, 300)  ' тормозим 265мм до скорости 20
-  Truck.Stop()
-  
-  relayPass:
+  Thread.Run=DriveToRobot
+  Gripper.Open()
   Comms.PassRelay()
   Truck.Otezd()
   Truck.Stop()
   
+  relayPass:
   Comms.WaitForTakeRelay()
   Program.Delay(2000)
-  Truck.DriveToCross()
+  Truck.DriveToCrossWithPower(40)
   Truck.Stop()
   Gripper.Close()
   Gripper.Flip2()
@@ -58,4 +64,8 @@ EndSub
 
 Sub OpenGripper
   Gripper.Open()
+EndSub
+Sub DriveToRobot
+  Truck.DriveDistance(250, 20, 0, 250)  ' тормозим 250мм до скорости 20
+  Truck.Stop()
 EndSub
